@@ -56,5 +56,16 @@ export const styles = StyleSheet.create({
         color: '#cbd5e1',
         fontSize: 20,
         marginBottom: 16,
-    }
+    },
+logoWrapper: {
+        backgroundColor: 'rgba(255, 255, 255, 0.15)',
+        padding: 24,
+        borderRadius: 24,
+        marginBottom: 16,
+    },
+    iconWrapper: {
+        backgroundColor: 'rgba(255, 255, 255, 0.15)',
+        padding: 6,           // Um padding menorzinho para a lista
+        borderRadius: 12,
+    },
 })
