@@ -4,6 +4,7 @@ import AntDesign from '@expo/vector-icons/AntDesign';
 import Zocial from '@expo/vector-icons/Zocial';
 import { styles } from './styles';
 import { Stack } from "expo-router";
+import { router } from 'expo-router';
 
 export function Login() {
   return (
@@ -67,7 +68,7 @@ export function Login() {
         </View>
 
         <View style={styles.rodaPe}>
-          <Pressable>
+          <Pressable onPress={() => router.push('/cadastro')}>
             <Text style={styles.textoCriarConta}>Primeira vez? Criar Conta →</Text>
           </Pressable>
 
