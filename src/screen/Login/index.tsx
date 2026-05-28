@@ -3,10 +3,22 @@ import { Feather } from "@expo/vector-icons";
 import AntDesign from '@expo/vector-icons/AntDesign';
 import Zocial from '@expo/vector-icons/Zocial';
 import { styles } from './styles';
-import { Stack } from "expo-router";
-import { router } from 'expo-router';
+import { Stack, router } from "expo-router";
+import { useAuth } from '@/src/context/AuthContext';
 
 export function Login() {
+  const { login } = useAuth();
+
+  const handleGoogleLogin = () => {
+    login();
+    router.replace('/(app)/home-tabs');
+  };
+
+  const handleEmailLogin = () => {
+    login();
+    router.replace('/(app)/home-tabs');
+  };
+
   return (
     <View style={styles.container}>
 
@@ -30,7 +42,7 @@ export function Login() {
 
         <View style={styles.cardBranco}>
           
-          <Pressable style={styles.botaoAzul}>
+          <Pressable style={styles.botaoAzul} onPress={handleGoogleLogin}>
             <AntDesign name="google" size={24} color="white" />
             <Text  style={styles.textoBotaoAzul}>Continuar com Google</Text>
           </Pressable>
@@ -41,7 +53,7 @@ export function Login() {
             <View style={styles.linhaDivisoria}></View>
           </View>
 
-          <Pressable style={styles.botaoBranco}>
+          <Pressable style={styles.botaoBranco} onPress={handleEmailLogin}>
             <Zocial name='email' size={24} color="black" />
             <Text style={styles.textoBotaoBranco}>Continuar com Email</Text>
           </Pressable>

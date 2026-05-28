@@ -1,9 +1,10 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { Stack } from "expo-router";
+import { Stack, router } from "expo-router";
 import { useState } from "react";
 import { KeyboardAvoidingView, Pressable, ScrollView, Text, TextInput, View } from "react-native";
 import { styles } from "./styles";
 import { FontAwesome } from '@expo/vector-icons';
+import { useAuth } from '@/src/context/AuthContext';
 
 export function Cadastro() {
 
@@ -14,7 +15,22 @@ const [cpf, setCpf] = useState('')
 const [senha, setSenha] = useState('')
 const [confirmarSenha, setConfirmarSenha] = useState('')
 const [aceitouTermos, setAceitouTermos] = useState(false)
+const { login } = useAuth();
 
+const handleCreateAccount = () => {
+  if (!nome || !email || !cpf || !senha || !confirmarSenha || !aceitouTermos) {
+    alert('Por favor, preencha todos os campos obrigatórios');
+    return;
+  }
+
+  if (senha !== confirmarSenha) {
+    alert('As senhas não correspondem');
+    return;
+  }
+
+  login();
+  router.replace('/(app)/home-tabs');
+};
 
     return(
         <KeyboardAvoidingView >
@@ -133,7 +149,7 @@ const [aceitouTermos, setAceitouTermos] = useState(false)
                             </Pressable>
                         </View>
 
-                        <Pressable style={styles.botaoPrimario}>
+                        <Pressable style={styles.botaoPrimario} onPress={handleCreateAccount}>
                             <Text style={styles.textoBotaoPrimario}>Criar Conta</Text>
                         </Pressable>
                     </View>
