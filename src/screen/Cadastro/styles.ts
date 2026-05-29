@@ -3,10 +3,11 @@ import { StyleSheet } from "react-native";
 export const styles = StyleSheet.create({
     containerPrincipal: {
         flexGrow: 1,                
-        backgroundColor: '#F8FAFC', 
+        backgroundColor: '#FFFFFF', 
         padding: 24,                
         alignItems: 'center',       
-        justifyContent: 'center',   
+        justifyContent: 'center', 
+        marginTop: 100,
     },
     cardBranco: {
         backgroundColor: '#FFFFFF',
@@ -24,6 +25,7 @@ export const styles = StyleSheet.create({
         padding: 40,                
         borderRadius: 20,           
         marginBottom: 20,
+        
     },
     titulo: {
         fontSize: 50,

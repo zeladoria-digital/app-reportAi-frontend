@@ -144,7 +144,7 @@ const handleCreateAccount = () => {
                                 color="gray">
                                 </Ionicons>
                                 <Text style={styles.checkboxText}>
-                                    Declaro ter lido e aceito os <Text style={styles.linkTermos}>Termos de Uso</Text>                                
+                                    Declaro ter lido e aceito os <Text style={styles.linkTermos} onPress={() => router.push('/termos')}>Termos de Uso</Text>                                
                                 </Text>
                             </Pressable>
                         </View>
