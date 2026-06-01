@@ -2,6 +2,7 @@ import { View, ScrollView, Text, Pressable } from "react-native";
 import { useState } from "react";
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { styles } from "./styles";
+import { router } from 'expo-router';
 
 
 export function Termos() {
@@ -114,11 +115,11 @@ export function Termos() {
                         <Text style={styles.texto}>Li e Concordo com os Termos de Privacidade e Autorizo o Tratamento dos meus dados conforme descrito acima.</Text>
                     </Pressable>
 
-                    <Pressable style={styles.botaoAceitar}>
+                    <Pressable style={styles.botaoAceitar} onPress={() => router.back()}>
                         <Text style={styles.textoBotaoAceitar}>Aceitar e Continuar</Text>
                     </Pressable>
 
-                    <Pressable style={styles.botaoRecusar}>
+                    <Pressable style={styles.botaoRecusar} onPress={() => router.replace('/login')} >
                         <Text style={styles.textoBotaoRecusar}>Recusar e Sair</Text>
                     </Pressable>
                 </View>

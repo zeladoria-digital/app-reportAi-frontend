@@ -1,10 +1,10 @@
+import { useAuth } from '@/src/context/AuthContext';
+import { FontAwesome } from '@expo/vector-icons';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Stack, router } from "expo-router";
 import { useState } from "react";
-import { KeyboardAvoidingView, Pressable, ScrollView, Text, TextInput, View } from "react-native";
+import { Alert, KeyboardAvoidingView, Pressable, ScrollView, Text, TextInput, View } from "react-native";
 import { styles } from "./styles";
-import { FontAwesome } from '@expo/vector-icons';
-import { useAuth } from '@/src/context/AuthContext';
 
 export function Cadastro() {
 
@@ -18,19 +18,24 @@ const [aceitouTermos, setAceitouTermos] = useState(false)
 const { login } = useAuth();
 
 const handleCreateAccount = () => {
-  if (!nome || !email || !cpf || !senha || !confirmarSenha || !aceitouTermos) {
-    alert('Por favor, preencha todos os campos obrigatórios');
-    return;
-  }
 
-  if (senha !== confirmarSenha) {
-    alert('As senhas não correspondem');
-    return;
-  }
+    if (!aceitouTermos) {
+        Alert.alert("Atenção", "Você precisa ler e aceitar os Termos de Uso para criar sua conta.");
+    }
 
-  login();
-  router.replace('/(app)/home-tabs');
-};
+    if (!nome || !email || !cpf || !senha || !confirmarSenha || !aceitouTermos) {
+        Alert.alert("Campos Obrigatórios", "Por favor, preencha todos os campos antes de continuar.");        
+        return;
+    }
+
+    if (senha !== confirmarSenha) {
+        Alert.alert("Erro na Senha", "As senhas não correspondem. Digite novamente.");        
+        return;
+    }
+
+    login();
+        router.replace('/(app)/home-tabs');
+    };
 
     return(
         <KeyboardAvoidingView >
