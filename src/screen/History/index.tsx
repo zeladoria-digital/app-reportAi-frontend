@@ -1,7 +1,7 @@
-import { View, Text, ScrollView, TouchableOpacity, TextInput } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
+import { ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { styles } from './styles';
 
 const MOCK_REPORTS = [
@@ -144,7 +144,14 @@ export function History() {
                   <Ionicons name={statusConfig.icon} size={16} color={statusConfig.color} />
                 </View>
 
-                <TouchableOpacity style={styles.reportCard} activeOpacity={0.7}>
+                <TouchableOpacity 
+                  style={styles.reportCard} 
+                  activeOpacity={0.7}
+                  onPress={() => router.push({
+                    pathname: '/detalhesDenuncia',
+                    params: { idDaDenuncia: report.id }
+                  })}
+                >
                   <View style={styles.cardContent}>
                     <View style={styles.reportImage} />
 
