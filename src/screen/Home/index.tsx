@@ -7,7 +7,7 @@ export function Home() {
   const router = useRouter();
 
   const handleNotifications = () => {
-    // Future: Navigate to notifications
+    router.push('/notificacoes')
   };
 
   const handleNewReport = () => {
@@ -28,6 +28,11 @@ export function Home() {
             <Text style={styles.greeting}>Olá, João</Text>
             <Text style={styles.subtitle}>Vamos melhorar a cidade</Text>
           </View>
+          
+          {/* Adicionamos o botão de Sino aqui na direita! */}
+          <TouchableOpacity onPress={handleNotifications} style={{ padding: 8 }}>
+            <Ionicons name="notifications-outline" size={28} color="#1E293B" />
+          </TouchableOpacity>
         </View>
 
         {/* Statistics Cards */}
