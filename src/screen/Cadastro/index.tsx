@@ -14,6 +14,9 @@ const [cpf, setCpf] = useState('')
 const [senha, setSenha] = useState('')
 const [confirmarSenha, setConfirmarSenha] = useState('')
 const [aceitouTermos, setAceitouTermos] = useState(false)
+const [dataNascimento, setDataNascimento] = useState('')
+const [cep, setCep] = useState('')
+const [numeroEndereco, setNumeroEndereco] = useState('')
 
 
     return(
@@ -88,7 +91,52 @@ const [aceitouTermos, setAceitouTermos] = useState(false)
                             onChangeText={setTelefone}
                             ></TextInput>
                             </View>
-                        </View>                        
+                        </View>    
+
+                        {/* --- NOVO: DATA DE NASCIMENTO --- */}
+                        <View style={styles.inputGroup}>
+                            <Text style={styles.label}>DATA DE NASCIMENTO</Text>
+                            <View style={styles.inputContainer}>
+                                <Ionicons name="calendar-outline" size={20} color="gray"></Ionicons>
+                                <TextInput
+                                    style={styles.input}
+                                    placeholder="DD/MM/AAAA"
+                                    keyboardType="numeric"
+                                    maxLength={10} // Impede de digitar mais que 10 caracteres
+                                    value={dataNascimento}
+                                    onChangeText={setDataNascimento}
+                                />
+                            </View>
+                        </View>                    
+{/* --- NOVO: ENDEREÇO (CEP) --- */}
+                        <View style={styles.inputGroup}>
+                            <Text style={styles.label}>CEP</Text>
+                            <View style={styles.inputContainer}>
+                                <Ionicons name="map-outline" size={20} color="gray"></Ionicons>
+                                <TextInput
+                                    style={styles.input}
+                                    placeholder="00000-000"
+                                    keyboardType="numeric"
+                                    maxLength={9}
+                                    value={cep}
+                                    onChangeText={setCep}
+                                />
+                            </View>
+                        </View>
+
+                        {/* --- NOVO: NÚMERO DO ENDEREÇO --- */}
+                        <View style={styles.inputGroup}>
+                            <Text style={styles.label}>NÚMERO DA RESIDÊNCIA</Text>
+                            <View style={styles.inputContainer}>
+                                <Ionicons name="home-outline" size={20} color="gray"></Ionicons>
+                                <TextInput
+                                    style={styles.input}
+                                    placeholder="Ex: 123 ou SN"
+                                    value={numeroEndereco}
+                                    onChangeText={setNumeroEndereco}
+                                />
+                            </View>
+                        </View>
                         
                         <View style={styles.inputGroup}>
                             <Text style={styles.label}>SENHA</Text>
