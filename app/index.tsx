@@ -1,8 +1,7 @@
-import { View, Text, Pressable } from "react-native";
-import { Feather } from "@expo/vector-icons"; 
-import { Stack, router } from "expo-router"; // 1. Importação para controlar o Cabeçalho
 import { styles } from '@/app/styles';
-import { LinearGradient } from 'expo-linear-gradient';
+import { Feather } from "@expo/vector-icons";
+import { Stack, router } from "expo-router"; // 1. Importação para controlar o Cabeçalho
+import { Pressable, Text, View } from "react-native";
 
 export default function BoasVindas() {
   return (
@@ -45,7 +44,7 @@ export default function BoasVindas() {
         </View>
 
         {/* 3. Estilos aplicados no Botão */}
-        <Pressable style={styles.botao} onPress={() => router.push('/login')}>
+        <Pressable style={styles.botao} onPress={() => router.push('/menu')}>
           <Text style={styles.botaoTexto}>Começar</Text>
         </Pressable>
       </View>

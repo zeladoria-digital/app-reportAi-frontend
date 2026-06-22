@@ -1,108 +1,179 @@
-import { View, Text, Pressable } from 'react-native';
-import { Feather } from "@expo/vector-icons";
-import AntDesign from '@expo/vector-icons/AntDesign';
-import Zocial from '@expo/vector-icons/Zocial';
-import { styles } from './styles';
-import { Stack, router } from "expo-router";
+import { auth } from '@/src/config/firebase';
 import { useAuth } from '@/src/context/AuthContext';
+import api from '@/src/services/api';
+import Ionicons from '@expo/vector-icons/Ionicons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { router, Stack } from "expo-router";
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { useState } from "react";
+import { Alert, KeyboardAvoidingView, Platform, Pressable, ScrollView, Text, TextInput, View } from "react-native";
+import { styles } from "./styles";
 
 export function Login() {
-  const { login } = useAuth();
+  const [email, setEmail] = useState('')
+  const [senha, setSenha] = useState('')
+  const [erros, setErros] = useState<Record<string, string>>({})
+  const [loading, setLoading] = useState(false)
+  const { login } = useAuth()
 
-  const handleGoogleLogin = () => {
-    login();
-    router.replace('/(app)/home-tabs');
-  };
+  const limparErro = (campo: string) => {
+    setErros(prev => ({ ...prev, [campo]: '' }))
+  }
 
-  const handleEmailLogin = () => {
-    login();
-    router.replace('/(app)/home-tabs');
-  };
+  const validarEmail = (email: string) => {
+    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    return regex.test(email)
+  }
+
+  const validarFormulario = () => {
+    const novosErros: Record<string, string> = {}
+
+    if (!email.trim()) novosErros.email = 'Email é obrigatório'
+    else if (!validarEmail(email)) novosErros.email = 'Informe um email válido'
+
+    if (!senha.trim()) novosErros.senha = 'Senha é obrigatória'
+    else if (senha.length < 6) novosErros.senha = 'Senha deve ter no mínimo 6 caracteres'
+
+    setErros(novosErros)
+    return Object.keys(novosErros).length === 0
+  }
+
+  const handleLogin = async () => {
+    if (!validarFormulario()) return
+
+    setLoading(true)
+    try {
+      // 1. Faz login no Firebase Auth
+      const userCredential = await signInWithEmailAndPassword(auth, email, senha)
+      const idToken = await userCredential.user.getIdToken()
+
+      // 2. Envia o idToken para o backend
+      const response = await api.post('/users/login', { idToken })
+
+      // 3. Salva o token e os dados do usuário
+      await AsyncStorage.setItem('token', response.data.token)
+      await AsyncStorage.setItem('user', JSON.stringify(response.data.user))
+
+      // 4. Atualiza o contexto
+      login()
+
+      // 5. Redireciona para home
+      router.replace('/(app)/home-tabs')
+
+    } catch (error: any) {
+      const mensagem = error.response?.data?.error || 'E-mail ou senha inválidos'
+
+      if (Platform.OS === 'web') {
+        setErros(prev => ({ ...prev, geral: mensagem }))
+      } else {
+        Alert.alert('Erro', mensagem)
+      }
+    } finally {
+      setLoading(false)
+    }
+  }
 
   return (
-    <View style={styles.container}>
-
+    <KeyboardAvoidingView>
       <Stack.Screen
       options={{
         title: 'Voltar',
         headerShadowVisible: false,
         headerStyle: { backgroundColor: '#F8FAFC' },
-      }}  />
-        
-        <View style={styles.header}>
-          
-            <View style={styles.icone}>
-                <Text style={styles.emojiIcon}>👋</Text>
+      }} />
+      <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+        <View style={styles.containerPrincipal}>
+
+          <Pressable
+          style={styles.botaoVoltar}
+          onPress={() => router.push('/menu')}
+        >
+          <Ionicons name="arrow-back" size={20} color="#3b82f6" />
+          <Text style={styles.textoBotaoVoltar}>Voltar</Text>
+        </Pressable>
+
+          {/* Header */}
+          <View style={styles.headerContainer}>
+            <View style={styles.iconeContainer}>
+              <Ionicons name="shield-checkmark" size={40} color="white" />
+            </View>
+            <Text style={styles.titulo}>Bem-vindo</Text>
+            <Text style={styles.subtitulo}>Entre na sua conta para continuar</Text>
+          </View>
+
+          {/* Card */}
+          <View style={styles.cardBranco}>
+
+            {/* Erro geral */}
+            {erros.geral ? (
+              <View style={styles.erroGeral}>
+                <Text style={styles.erroGeralText}>{erros.geral}</Text>
+              </View>
+            ) : null}
+
+            {/* EMAIL */}
+            <View style={styles.inputGroup}>
+              <Text style={styles.label}>EMAIL</Text>
+              <View style={[styles.inputContainer, erros.email ? styles.inputError : null]}>
+                <Ionicons name="mail-outline" size={20} color="gray" />
+                <TextInput
+                  style={styles.input}
+                  placeholder="seu@email.com"
+                  value={email}
+                  onChangeText={(text) => { setEmail(text); limparErro('email') }}
+                  keyboardType="email-address"
+                  autoCapitalize="none"
+                />
+              </View>
+              {erros.email ? <Text style={styles.erroText}>{erros.email}</Text> : null}
             </View>
 
-            <Text style={styles.titulo}>Bem-vindo de Volta!</Text>
-            <Text style={styles.subtitulo}>Continue Fazendo a Diferença na sua Cidade</Text>
-            
-        </View>
+            {/* SENHA */}
+            <View style={styles.inputGroup}>
+              <Text style={styles.label}>SENHA</Text>
+              <View style={[styles.inputContainer, erros.senha ? styles.inputError : null]}>
+                <Ionicons name="lock-closed-outline" size={20} color="gray" />
+                <TextInput
+                  style={styles.input}
+                  placeholder="Sua senha"
+                  value={senha}
+                  onChangeText={(text) => { setSenha(text); limparErro('senha') }}
+                  secureTextEntry
+                />
+              </View>
+              {erros.senha ? <Text style={styles.erroText}>{erros.senha}</Text> : null}
+            </View>
 
-        <View style={styles.cardBranco}>
-          
-          <Pressable style={styles.botaoAzul} onPress={handleGoogleLogin}>
-            <AntDesign name="google" size={24} color="white" />
-            <Text  style={styles.textoBotaoAzul}>Continuar com Google</Text>
-          </Pressable>
-
-          <View style={styles.divisorContainer}>
-            <View style={styles.linhaDivisoria}></View>
-            <Text style={styles.textoOU}>OU</Text>
-            <View style={styles.linhaDivisoria}></View>
-          </View>
-
-          <Pressable style={styles.botaoBranco} onPress={handleEmailLogin}>
-            <Zocial name='email' size={24} color="black" />
-            <Text style={styles.textoBotaoBranco}>Continuar com Email</Text>
-          </Pressable>
-
-        </View>
-
-        <View style={styles.gamificacaoContainer}>
-
-          <View style={styles.miniCard}>
-            <Feather name="award" size={24} color="#EAB308" />
-            <Text style={styles.textoMiniCard}>Ganhe Pontos</Text>
-          </View>          
-          
-          <View style={styles.miniCard}>
-            <Feather name="trending-up" size={24} color="#22C55E" />
-            <Text style={styles.textoMiniCard}>Suba no Ranking</Text>
-          </View>          
-          
-          <View style={styles.miniCard}>
-            <Feather name="star" size={24} color="#A855F7" />
-            <Text style={styles.textoMiniCard}>Desbloqueie Medalhas</Text>
-          </View>
-
-        </View>
-
-        <View style={styles.rodaPe}>
-          <Pressable onPress={() => router.push('/cadastro')}>
-            <Text style={styles.textoCriarConta}>Primeira vez? Criar Conta →</Text>
-          </Pressable>
-
-          {/* O Truque dos Textos Aninhados */}
-          <Text style={styles.textoLgpd}>
-            Ao continuar, você concorda com nossos{' '}
-            <Text 
-                style={styles.textoLinkLegal} 
-                onPress={() => console.log('Abrir Termos')}
+            {/* Esqueci a senha */}
+            <Pressable
+              style={styles.esqueciSenhaContainer}
+              onPress={() => router.push('/esqueci-senha')}
             >
-                Termos de uso
-            </Text>
-            {' '}e{' '}
-            <Text 
-                style={styles.textoLinkLegal} 
-                onPress={() => console.log('Abrir Privacidade')}
-            >
-                Política de Privacidade
-            </Text>
-          </Text>
-        </View>
+              <Text style={styles.esqueciSenhaText}>Esqueci minha senha</Text>
+            </Pressable>
 
-    </View>
-  );
+            {/* Botão de login */}
+            <Pressable
+              style={[styles.botaoPrimario, loading && styles.botaoDesabilitado]}
+              onPress={handleLogin}
+              disabled={loading}
+            >
+              <Text style={styles.textoBotaoPrimario}>
+                {loading ? 'Entrando...' : 'Entrar'}
+              </Text>
+            </Pressable>
+
+            {/* Cadastro */}
+            <View style={styles.cadastroContainer}>
+              <Text style={styles.cadastroText}>Não tem uma conta? </Text>
+              <Pressable onPress={() => router.push('/cadastro')}>
+                <Text style={styles.cadastroLink}>Cadastre-se</Text>
+              </Pressable>
+            </View>
+
+          </View>
+        </View>
+      </ScrollView>
+    </KeyboardAvoidingView>
+  )
 }
