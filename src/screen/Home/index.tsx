@@ -1,10 +1,48 @@
-import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
-import { MaterialCommunityIcons, Ionicons } from '@expo/vector-icons';
+import { useAuth } from '@/src/context/AuthContext';
+import ComplaintService from '@/src/services/complaintService';
+import UserService from '@/src/services/userService';
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
+import { useEffect, useState } from 'react';
+import { ActivityIndicator, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { styles } from './styles';
 
 export function Home() {
   const router = useRouter();
+  const { user } = useAuth(); // ← assume que o AuthContext guarda o usuário logado
+
+  const [loading, setLoading] = useState(true);
+  const [points, setPoints] = useState(0);
+  const [complaints, setComplaints] = useState([]);
+  const [ranking, setRanking] = useState(null);
+
+  useEffect(() => {
+    loadData();
+  }, []);
+
+  const loadData = async () => {
+    try {
+      setLoading(true);
+
+      const [pointsData, complaintsData, rankingData] = await Promise.all([
+        UserService.getPoints(user.id),
+        ComplaintService.getMyComplaints(),
+        UserService.getRanking(),
+      ]);
+
+      setPoints(pointsData.points);
+      setComplaints(complaintsData);
+
+      // Encontra a posição do usuário no ranking
+      const userPosition = rankingData.find(r => r.id === user.id);
+      setRanking(userPosition?.position ?? null);
+
+    } catch (error) {
+      console.error('Erro ao carregar dados:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleNotifications = () => {
     router.push('/notificacoes')
@@ -14,9 +52,30 @@ export function Home() {
     router.push('/(app)/new-report');
   };
 
+  // Mapeia o status do backend para texto e cor
+  const getStatusInfo = (status) => {
+    const statusMap = {
+      pending: { text: 'Recebido', color: '#F59E0B', bgStyle: styles.statusInProgress, textColor: '#0369A1' },
+      approved: { text: 'Em Análise', color: '#F59E0B', bgStyle: styles.statusInProgress, textColor: '#0369A1' },
+      in_progress: { text: 'Em andamento', color: '#F59E0B', bgStyle: styles.statusInProgress, textColor: '#0369A1' },
+      resolved: { text: 'Resolvido', color: '#22C55E', bgStyle: styles.statusResolved, textColor: '#16A34A' },
+      rejected: { text: 'Rejeitado', color: '#EF4444', bgStyle: styles.statusResolved, textColor: '#DC2626' },
+    };
+    return statusMap[status] || statusMap.pending;
+  };
+
+  const resolvedCount = complaints.filter(c => c.status === 'resolved').length;
+
+  if (loading) {
+    return (
+      <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
+        <ActivityIndicator size="large" color="#1E293B" />
+      </View>
+    );
+  }
+
   return (
     <>
-
       <ScrollView
         style={styles.container}
         contentContainerStyle={styles.scrollContent}
@@ -25,11 +84,10 @@ export function Home() {
         {/* Header */}
         <View style={styles.header}>
           <View style={styles.greetingContainer}>
-            <Text style={styles.greeting}>Olá, João</Text>
+            <Text style={styles.greeting}>Olá, {user?.name?.split(' ')[0] || 'Cidadão'}</Text>
             <Text style={styles.subtitle}>Vamos melhorar a cidade</Text>
           </View>
-          
-          {/* Adicionamos o botão de Sino aqui na direita! */}
+
           <TouchableOpacity onPress={handleNotifications} style={{ padding: 8 }}>
             <Ionicons name="notifications-outline" size={28} color="#1E293B" />
           </TouchableOpacity>
@@ -38,17 +96,17 @@ export function Home() {
         {/* Statistics Cards */}
         <View style={styles.statsContainer}>
           <View style={styles.statCard}>
-            <Text style={styles.statValue}>12</Text>
+            <Text style={styles.statValue}>{complaints.length}</Text>
             <Text style={styles.statLabel}>Reportes</Text>
           </View>
 
           <View style={styles.statCard}>
-            <Text style={styles.statValue}>8</Text>
+            <Text style={styles.statValue}>{resolvedCount}</Text>
             <Text style={styles.statLabel}>Resolvidos</Text>
           </View>
 
           <View style={styles.statCard}>
-            <Text style={styles.statValue}>#12</Text>
+            <Text style={styles.statValue}>{ranking ? `#${ranking}` : '-'}</Text>
             <Text style={styles.statLabel}>Ranking</Text>
           </View>
         </View>
@@ -57,8 +115,7 @@ export function Home() {
         <View style={styles.pointsCard}>
           <View style={styles.pointsContent}>
             <Text style={styles.pointsLabel}>Seus Pontos</Text>
-            <Text style={styles.pointsValue}>1.247</Text>
-            <Text style={styles.pointsSubtitle}>Subiu 3 posições</Text>
+            <Text style={styles.pointsValue}>{points.toLocaleString('pt-BR')}</Text>
           </View>
           <View style={styles.pointsIcon}>
             <MaterialCommunityIcons name="trophy" size={28} color="#FFFFFF" />
@@ -86,35 +143,26 @@ export function Home() {
         <Text style={styles.sectionTitle}>Atividade Recente</Text>
 
         <View style={styles.recentActivityContainer}>
-          <View style={styles.activityItem}>
-            <View style={[styles.activityIndicator, { backgroundColor: '#F59E0B' }]} />
-            <Text style={styles.activityText}>Fossa cheia - Rua das Flores</Text>
-            <View style={[styles.activityStatus, styles.statusInProgress]}>
-              <Text style={{ color: '#0369A1', fontSize: 10, fontWeight: '600' }}>
-                Em andamento
-              </Text>
-            </View>
-          </View>
-
-          <View style={styles.activityItem}>
-            <View style={[styles.activityIndicator, { backgroundColor: '#F59E0B' }]} />
-            <Text style={styles.activityText}>Buraco na via - Av. Principal</Text>
-            <View style={[styles.activityStatus, styles.statusInProgress]}>
-              <Text style={{ color: '#0369A1', fontSize: 10, fontWeight: '600' }}>
-                Em andamento
-              </Text>
-            </View>
-          </View>
-
-          <View style={styles.activityItem}>
-            <View style={[styles.activityIndicator, { backgroundColor: '#22C55E' }]} />
-            <Text style={styles.activityText}>Lixo acumulado - Rua Central</Text>
-            <View style={[styles.activityStatus, styles.statusResolved]}>
-              <Text style={{ color: '#16A34A', fontSize: 10, fontWeight: '600' }}>
-                Resolvido
-              </Text>
-            </View>
-          </View>
+          {complaints.length === 0 ? (
+            <Text style={{ color: '#64748B', textAlign: 'center', padding: 16 }}>
+              Você ainda não fez nenhum reporte
+            </Text>
+          ) : (
+            complaints.slice(0, 5).map((complaint) => {
+              const statusInfo = getStatusInfo(complaint.status);
+              return (
+                <View key={complaint.id} style={styles.activityItem}>
+                  <View style={[styles.activityIndicator, { backgroundColor: statusInfo.color }]} />
+                  <Text style={styles.activityText}>{complaint.description}</Text>
+                  <View style={[styles.activityStatus, statusInfo.bgStyle]}>
+                    <Text style={{ color: statusInfo.textColor, fontSize: 10, fontWeight: '600' }}>
+                      {statusInfo.text}
+                    </Text>
+                  </View>
+                </View>
+              );
+            })
+          )}
         </View>
       </ScrollView>
     </>

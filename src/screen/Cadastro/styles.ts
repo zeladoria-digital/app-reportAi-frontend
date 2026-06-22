@@ -93,6 +93,25 @@ export const styles = StyleSheet.create({
         color: '#FFFFFF',           // Texto branco
         fontSize: 25,
         fontWeight: 'bold',
-    }
-
+    },
+    erroText: {
+        color: '#EF4444',
+        fontSize: 12,
+        marginTop: 4,
+        marginLeft: 4,
+    },
+    inputError: {
+        borderColor: '#EF4444',
+    },
+    erroGeral: {
+        backgroundColor: '#FEE2E2',
+        borderRadius: 8,
+        padding: 12,
+        marginBottom: 16,
+    },
+    erroGeralText: {
+        color: '#EF4444',
+        fontSize: 14,
+        textAlign: 'center',
+    },
 })

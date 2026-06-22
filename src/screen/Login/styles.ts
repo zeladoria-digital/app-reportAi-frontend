@@ -1,152 +1,138 @@
-import { StyleSheet } from 'react-native';
+import { StyleSheet } from "react-native";
 
 export const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#eff3f6', // Aquele cinza/gelo de fundo do Figma
-        alignItems: 'center',       // Já garante que tudo fique centralizado
-        justifyContent: 'center',   // Empurra tudo pro meio da tela
-        padding: 24,
-    },
-    header: {
-        alignItems: 'center',
-        marginBottom: 32,
-    },
-    icone: {
-        width: 120,
-        height: 120,
-        backgroundColor: '#3b82f6', 
-        borderRadius: 20,
-        alignItems: 'center',
-        justifyContent: 'center',
-        marginBottom: 24,
-
-    },
-    emojiIcon: {
-        fontSize: 60,
-
-    },
-    titulo: {
-        fontSize: 45,
-        fontWeight: 'bold',
-        color: '#1E293B',
-        marginBottom: 8,
-    },
-    subtitulo: {
-        fontSize: 25,
-        color: '#64748B',
-        fontWeight: 'bold'
-    },
-    cardBranco: {
-        backgroundColor: 'white',
-        width: '100%',        
-        padding: 24,           
-        borderRadius: 16,      
-        elevation: 2,
-
-    },
-    botaoAzul: {
-        backgroundColor: '#2563EB',
-        width: '100%',
-        paddingVertical: 16,
-        borderRadius: 12,
-        alignItems: 'center',
-        flexDirection: 'row',
-        gap: 10,
-        justifyContent: 'center'
-
-    },
-    textoBotaoAzul: {
-        color: 'white',
-        fontSize: 18,
-        fontWeight: 'bold',
-
-    },
-    divisorContainer: {
-        flexDirection: 'row',  
-        alignItems: 'center',  
-        marginVertical: 24,
-
-    },
-    linhaDivisoria: {  
-        flex: 1,              
-        height: 1,            
-        backgroundColor: '#E2E8F0', //      
-
-    },
-    textoOU: {
-        marginHorizontal: 16,  
-        color: '#94A3B8',
-        fontSize: 16,
-
-    },
-    botaoBranco: {
-        backgroundColor: 'white',
-        borderWidth: 1,        
-        borderColor: '#CBD5E1',
-        width: '100%',
-        paddingVertical: 16,
-        borderRadius: 12,
-        alignItems: 'center',
-        flexDirection: 'row',
-        gap: 10,
-        justifyContent: 'center'
-
-
-    },
-    textoBotaoBranco: {
-        color: '#475569',
-        fontSize: 18,
-        fontWeight: 'bold',
-
-    },
-    gamificacaoContainer: {
-        flexDirection: 'row',
-        gap: 25,
-        marginTop: 20,
-        width: '100%'
-
-    },
-    miniCard: {
-        flex: 1,
-        elevation: 2,
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: '#ffffff',
-        borderRadius: 10,
-        padding: 30,
-    },
-    textoMiniCard: {
-        fontSize: 20,
-        color: '#475569',
-        fontWeight: 'bold',
-        textAlign: 'center',
-        marginTop: 8
-
-    },
-    rodaPe: {
-        marginTop: 50,
-        alignItems: 'center',
-        gap: 24,
-        width: '100%'
-
-    },
-    textoCriarConta: {
-        color: '#2563EB',
-        fontSize: 25,
-        fontWeight: 'bold',
-
-    },
-    textoLgpd: {
-        color: '#94A3B8',
-        fontSize: 20, 
-        textAlign: 'center',
-        paddingHorizontal: 20
-    },
-    textoLinkLegal: {
-        color: '#2563EB', 
-        fontWeight: 'bold',
-    }
-    
-
-});
+  containerPrincipal: {
+    flexGrow: 1,
+    backgroundColor: '#F8FAFC',
+    padding: 24,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 80,
+  },
+  headerContainer: {
+    alignItems: 'center',
+    marginBottom: 32,
+  },
+  iconeContainer: {
+    backgroundColor: '#3b82f6',
+    padding: 24,
+    borderRadius: 20,
+    marginBottom: 20,
+  },
+  titulo: {
+    fontSize: 32,
+    fontWeight: 'bold',
+    color: '#1E293B',
+    marginBottom: 8,
+  },
+  subtitulo: {
+    fontSize: 16,
+    color: '#64748B',
+    textAlign: 'center',
+  },
+  cardBranco: {
+    backgroundColor: '#FFFFFF',
+    width: '100%',
+    padding: 24,
+    borderRadius: 16,
+    elevation: 3,
+  },
+  inputGroup: {
+    marginBottom: 16,
+  },
+  label: {
+    fontSize: 13,
+    fontWeight: 'bold',
+    color: '#475569',
+    marginBottom: 8,
+  },
+  inputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#CBD5E1',
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    height: 48,
+  },
+  inputError: {
+    borderColor: '#EF4444',
+  },
+  input: {
+    flex: 1,
+    marginLeft: 8,
+    fontSize: 16,
+    color: '#1E293B',
+  },
+  erroText: {
+    color: '#EF4444',
+    fontSize: 12,
+    marginTop: 4,
+    marginLeft: 4,
+  },
+  erroGeral: {
+    backgroundColor: '#FEE2E2',
+    borderRadius: 8,
+    padding: 12,
+    marginBottom: 16,
+  },
+  erroGeralText: {
+    color: '#EF4444',
+    fontSize: 14,
+    textAlign: 'center',
+  },
+  esqueciSenhaContainer: {
+    alignItems: 'flex-end',
+    marginBottom: 24,
+    marginTop: -8,
+  },
+  esqueciSenhaText: {
+    color: '#3b82f6',
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  botaoPrimario: {
+    backgroundColor: '#3b82f6',
+    height: 52,
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 16,
+  },
+  botaoDesabilitado: {
+    backgroundColor: '#93C5FD',
+  },
+  textoBotaoPrimario: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  cadastroContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginTop: 8,
+  },
+  cadastroText: {
+    color: '#64748B',
+    fontSize: 14,
+  },
+  cadastroLink: {
+    color: '#3b82f6',
+    fontSize: 14,
+    fontWeight: 'bold',
+  },
+  botaoVoltar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    alignSelf: 'flex-start', // ← força à esquerda
+    marginBottom: 16,
+    marginLeft: -8, // ← ajuste fino se necessário
+    gap: 4,
+  },
+  textoBotaoVoltar: {
+    color: '#3b82f6',
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  
+})
