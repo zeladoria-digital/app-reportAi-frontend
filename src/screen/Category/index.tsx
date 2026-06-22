@@ -2,6 +2,8 @@ import { View, Text, ScrollView, TouchableOpacity, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { styles } from './styles';
+import { useReport } from '../../contexts/reportContext'; // Ajuste o caminho se precisar
+import { useEffect } from 'react'; // O useEffect executa coisas assim que a tela abre
 
 const CATEGORIES = [
   { id: 'fossa', name: 'Fossa cheia', color: '#F59E0B', icon: 'water', highlight: true },
@@ -17,12 +19,20 @@ const CATEGORIES = [
 export function Category() {
   const router = useRouter();
 
-  const handleSelectCategory = (category) => {
-    router.push({
-      pathname: '/(app)/location',
-      params: { category: JSON.stringify(category) },
-    });
+const handleSelectCategory = (category) => {
+    // 1. Guarda o nome do problema (ex: 'Fossa cheia') no cofre global
+    salvarCategoria(category.name); 
+
+    // 2. Vai para a próxima tela livre e leve
+    router.push('/(app)/location');
   };
+  // Puxamos a variável 'report' que tem todos os dados do cofre
+const { report, salvarCategoria } = useReport(); // Pegamos a chave de salvar!
+  // O useEffect vai "gritar" no seu terminal assim que a tela de Categoria abrir
+  useEffect(() => {
+    console.log("TELA DE CATEGORIA ABRIU!");
+    console.log("O QUE TEM NO COFRE AGORA?", report);
+  }, [report]);
 
   return (
     <>

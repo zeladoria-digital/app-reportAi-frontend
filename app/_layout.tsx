@@ -1,6 +1,9 @@
 import { Stack } from "expo-router";
 import { useEffect, useState } from "react";
 import { AuthProvider, useAuth } from "@/src/context/AuthContext";
+// Importamos o nosso cofre global de denúncias
+// (Verifique se o nome da pasta no seu PC é 'context' ou 'contexts')
+import { ReportProvider } from "../src/contexts/reportContext"; 
 
 function RootLayoutContent() {
   const { isLoggedIn } = useAuth();
@@ -15,10 +18,9 @@ function RootLayoutContent() {
   }, []);
 
   return (
-    <Stack
+  <Stack
       screenOptions={{
         headerShown: false,
-        animationEnabled: true,
       }}
     >
       {showSplash ? (
@@ -44,7 +46,10 @@ function RootLayoutContent() {
 export default function RootLayout() {
   return (
     <AuthProvider>
-      <RootLayoutContent />
+      {/* O cofre global abraça o conteúdo logo após a validação de usuário */}
+      <ReportProvider>
+        <RootLayoutContent />
+      </ReportProvider>
     </AuthProvider>
   );
 }

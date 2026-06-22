@@ -43,7 +43,7 @@ export const styles = StyleSheet.create({
   },
   cameraArea: {
     flex: 1,
-    backgroundColor: '#000000',
+    backgroundColor: 'transparent',
   },
   controls: {
     flexDirection: 'row',

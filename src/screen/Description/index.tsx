@@ -3,14 +3,18 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { styles } from './styles';
+import { useReport } from '../../contexts/reportContext'; // Ajuste o caminho se precisar
+
 
 const SUGGESTED_TAGS = ['urgente', 'risco', 'pedestres', 'acessibilidade', 'animal'];
 
 export function Description() {
   const router = useRouter();
+  const { salvarDescricao } = useReport(); // Puxamos a função do cofre!
   const [description, setDescription] = useState('');
   const [selectedTags, setSelectedTags] = useState([]);
   const [customTag, setCustomTag] = useState('');
+  
 
   const handleToggleTag = (tag) => {
     if (selectedTags.includes(tag)) {
@@ -27,7 +31,20 @@ export function Description() {
     }
   };
 
-  const handleContinue = () => {
+const handleContinue = () => {
+    // 1. Prepara o texto final
+    let textoFinal = description;
+    
+    // 2. Se o cidadão escolheu alguma tag, adicionamos elas no final do texto
+    if (selectedTags.length > 0) {
+      const tagsString = selectedTags.map(tag => `#${tag}`).join(' ');
+      textoFinal = `${description}\nTags: ${tagsString}`;
+    }
+
+    // 3. Guarda tudo no cofre global!
+    salvarDescricao(textoFinal);
+
+    // 4. Pula para a tela final de Confirmação
     router.push('/(app)/confirmation');
   };
 
