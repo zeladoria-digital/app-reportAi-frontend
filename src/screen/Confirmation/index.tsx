@@ -3,37 +3,72 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { styles } from './styles';
-import * as Network from 'expo-network'
+import * as Network from 'expo-network';
 import { salvarReporteOffline } from '../../storage/offlineStorage';
+import api from '../../services/api'; 
 
-// 👇 1. Importamos a nossa chave do cofre!
+// Importação da chave do cofre global
 import { useReport } from '../../contexts/reportContext'; 
 
 export function Confirmation() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
 
-  // 👇 2. Abrimos o cofre e pegamos TODOS os dados, além da função de limpar
+  // Coleta os dados guardados no Contexto
   const { report, limparReport } = useReport();
 
   const handleSubmit = async () => {
     setLoading(true);
     try {
-      // 1. O aplicativo verifica o status da internet naquele exato milissegundo
       const networkState = await Network.getNetworkStateAsync();
 
-      // 2. A DECISÃO ARQUITETURAL: Tem internet?
       if (networkState.isConnected && networkState.isInternetReachable) {
-        
-        // MODO ONLINE: A ponte com o Back-end (Kauê) vai aqui no futuro!
-        console.log('Internet OK! Disparando para o servidor do Kauê:', report);
+        console.log('Internet OK! Preparando o Caminhão Pesado (FormData)...');
+
+        const formData = new FormData();
+
+        // Embala a foto
+        // @ts-ignore
+        formData.append('foto', {
+          uri: report.fotoUri,
+          name: `denuncia_${Date.now()}.jpg`,
+          type: 'image/jpeg',
+        });
+
+// 1. FORMATANDO A DATA 
+const [dataExif, horaExif] = report.dataHora.split(' ');
+        const dataIso = `${dataExif.replace(/:/g, '-')}T${horaExif}-03:00`;
+
+        // 2. O PACOTE PERFEITO FINAL
+        const dados = {
+          // Se o usuário não digitar nada, mandamos um texto com mais de 10 caracteres pra não quebrar a regra
+          description: report.descricao || "Sem descrição informada",
+          category: report.categoria, // 🚀 Agora vai a categoria real que você clicou na tela!
+          neighborhood: 'Centro', // Mantemos fixo por enquanto
+          location: {
+            latitude: report.latitude,
+            longitude: report.longitude,
+          },
+          exif: {
+            dateTaken: dataIso, 
+            latitude: report.latitude,
+            longitude: report.longitude,
+          }
+        };
+
+        formData.append('dados', JSON.stringify(dados));
+
+        const resposta = await api.post('/complaints/citizen', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        });
+
+        console.log('Sucesso! Resposta do servidor:', resposta.data);
         Alert.alert("Sucesso", "Sua denúncia foi enviada para a prefeitura!");
 
       } else {
-        
-        // MODO OFFLINE: O celular está sem sinal! Aciona a Caixa Preta (RNF06)
-        console.log('Sem internet! Guardando na Caixa Preta (AsyncStorage)...');
-        
+        console.log('Sem internet! Guardando na Caixa Preta...');
         const salvoComSucesso = await salvarReporteOffline(report);
         
         if (salvoComSucesso) {
@@ -46,17 +81,17 @@ export function Confirmation() {
         }
       }
       
-      // 3. Esvazia o cofre de memória RAM (Context) e volta para a tela inicial
       limparReport(); 
       router.push('/(app)/home-tabs');
 
-    } catch (error) {
-      console.error("Erro no processamento do reporte:", error);
-      Alert.alert("Erro", "Ocorreu um problema ao processar sua denúncia.");
+    } catch (error: any) {
+      console.error("Erro no servidor:", error.response?.data || error.message);
+      Alert.alert("Erro", error.response?.data?.error || "Ocorreu um problema ao processar sua denúncia.");
     } finally {
       setLoading(false);
     }
   };
+
   return (
     <>
       <View style={styles.header}>
@@ -75,7 +110,7 @@ export function Confirmation() {
           Revise seus dados
         </Text>
 
-        {/* FOTO REAIS AQUI */}
+        {/* Card da Foto */}
         <View style={styles.reviewCard}>
           <View style={styles.cardHeader}>
             <Ionicons name="image" size={16} color="#64748B" />
@@ -84,7 +119,6 @@ export function Confirmation() {
               <Text style={styles.liveBadgeText}>✓ Ao vivo</Text>
             </View>
           </View>
-          {/* Se a foto existe no cofre, mostra a imagem. Se não, mostra o fundo cinza */}
           {report.fotoUri ? (
             <Image source={{ uri: report.fotoUri }} style={{ height: 200, borderRadius: 12, marginTop: 12 }} />
           ) : (
@@ -92,7 +126,7 @@ export function Confirmation() {
           )}
         </View>
 
-        {/* CATEGORIA REAL AQUI */}
+        {/* Card da Categoria */}
         <View style={styles.reviewCard}>
           <View style={styles.cardHeader}>
             <Ionicons name="pricetag" size={16} color="#64748B" />
@@ -102,12 +136,11 @@ export function Confirmation() {
             <View style={[styles.categoryIcon, { backgroundColor: '#FEF3C7' }]}>
               <Ionicons name="alert-circle" size={20} color="#F59E0B" />
             </View>
-            {/* O texto agora vem do cofre! */}
             <Text style={styles.categoryName}>{report.categoria || 'Não informada'}</Text>
           </View>
         </View>
 
-        {/* GPS REAL AQUI */}
+        {/* Card da Localização */}
         <View style={styles.reviewCard}>
           <View style={styles.cardHeader}>
             <Ionicons name="location" size={16} color="#64748B" />
@@ -121,19 +154,18 @@ export function Confirmation() {
           </Text>
         </View>
 
-        {/* DESCRIÇÃO REAL AQUI */}
+        {/* Card da Descrição */}
         <View style={styles.reviewCard}>
           <View style={styles.cardHeader}>
             <Ionicons name="document-text" size={16} color="#64748B" />
             <Text style={styles.cardTitle}>Descrição</Text>
           </View>
-          {/* O texto e as tags juntos que salvamos no cofre */}
           <Text style={styles.descriptionText}>
             {report.descricao || 'Nenhuma descrição fornecida.'}
           </Text>
         </View>
 
-        {/* Success Banner */}
+        {/* Banner de Gamificação */}
         <View style={styles.successBanner}>
           <View style={{ marginRight: 12 }}>
             <Ionicons name="checkmark-circle" size={20} color="#16A34A" />
@@ -146,6 +178,7 @@ export function Confirmation() {
           </View>
         </View>
 
+        {/* Botão de Envio */}
         <TouchableOpacity style={[styles.submitButton, loading && styles.submitButtonDisabled]} onPress={handleSubmit} disabled={loading}>
           {loading ? (
             <ActivityIndicator color="#FFFFFF" />

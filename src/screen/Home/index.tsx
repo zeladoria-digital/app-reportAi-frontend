@@ -1,6 +1,4 @@
 import { useAuth } from '@/src/context/AuthContext';
-import ComplaintService from '@/src/services/complaintService';
-import UserService from '@/src/services/userService';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
@@ -24,18 +22,10 @@ export function Home() {
     try {
       setLoading(true);
 
-      const [pointsData, complaintsData, rankingData] = await Promise.all([
-        UserService.getPoints(user.id),
-        ComplaintService.getMyComplaints(),
-        UserService.getRanking(),
-      ]);
-
-      setPoints(pointsData.points);
-      setComplaints(complaintsData);
-
-      // Encontra a posição do usuário no ranking
-      const userPosition = rankingData.find(r => r.id === user.id);
-      setRanking(userPosition?.position ?? null);
+      // Como os serviços não existem ainda, deixamos tudo zerado
+      setPoints(0);
+      setComplaints([]);
+      setRanking(null);
 
     } catch (error) {
       console.error('Erro ao carregar dados:', error);
@@ -43,7 +33,6 @@ export function Home() {
       setLoading(false);
     }
   };
-
   const handleNotifications = () => {
     router.push('/notificacoes')
   };
