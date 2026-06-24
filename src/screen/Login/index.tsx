@@ -61,15 +61,60 @@ export function Login() {
       router.replace('/(app)/home-tabs')
 
     } catch (error: any) {
-      const mensagem = error.response?.data?.error || 'E-mail ou senha inválidos'
+      console.error("Erro capturado no Login:", error);
 
-      if (Platform.OS === 'web') {
-        setErros(prev => ({ ...prev, geral: mensagem }))
-      } else {
-        Alert.alert('Erro', mensagem)
+      let tituloErro = "Ops!";
+      let mensagemErro = "Ocorreu um problema inesperado.";
+
+      // 1. Erros do Firebase (O cidadão digitou a senha errada ou está sem internet)
+      if (error.code) {
+        switch (error.code) {
+          case 'auth/invalid-credential':
+          case 'auth/wrong-password':
+          case 'auth/user-not-found':
+          case 'auth/invalid-email':
+            tituloErro = "Acesso Negado";
+            mensagemErro = "E-mail ou senha incorretos. Verifique suas credenciais e tente novamente.";
+            break;
+          case 'auth/network-request-failed':
+            tituloErro = "Sem Internet";
+            mensagemErro = "Verifique sua conexão com a internet para conseguir entrar no ReportaAI.";
+            break;
+          case 'auth/too-many-requests':
+            tituloErro = "Conta Bloqueada";
+            mensagemErro = "Muitas tentativas falhas. Tente novamente mais tarde ou redefina sua senha.";
+            break;
+          default:
+            tituloErro = "Erro na Autenticação";
+            mensagemErro = "Não foi possível validar seu usuário no momento.";
+        }
+      } 
+      // 2. Erros do seu Back-end / Axios (A requisição ao Node.js falhou)
+      else if (error.response) {
+        const status = error.response.status;
+        if (status === 401 || status === 403) {
+          tituloErro = "Sessão Inválida";
+          mensagemErro = "Houve um problema na verificação do seu acesso no servidor. Tente entrar novamente.";
+        } else {
+          tituloErro = "Erro no Servidor";
+          mensagemErro = error.response?.data?.error || "Ocorreu uma instabilidade interna no sistema. Tente novamente mais tarde.";
+        }
+      } 
+      // 3. O Servidor Node.js não respondeu (Back-end desligado ou sem rede)
+      else if (error.request || error.message === "Network Error") {
+        tituloErro = "Sistema Indisponível";
+        mensagemErro = "Não foi possível conectar aos servidores da prefeitura. Verifique se o serviço está online.";
       }
+
+      // 4. Exibe o erro de forma visual e amigável
+      if (Platform.OS === 'web') {
+        setErros(prev => ({ ...prev, geral: `${tituloErro}: ${mensagemErro}` }));
+      } else {
+        Alert.alert(tituloErro, mensagemErro);
+      }
+      
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   }
 

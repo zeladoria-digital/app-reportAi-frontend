@@ -22,7 +22,7 @@ export async function carregarReportesOffline() {
 }
 
 // 3. FUNÇÃO DE SALVAR (Adicionar um novo reporte na caixa preta)
-export async function salvarReporteOffline(novoReporte: any) {
+export async function salvarReporteOffline(novoReporte) {
   try {
     // Primeiro, abrimos a gaveta para ver se já tem outros reportes lá
     const reportesAtuais = await carregarReportesOffline();
@@ -50,4 +50,20 @@ export async function salvarReporteOffline(novoReporte: any) {
 // 4. FUNÇÃO DE LIMPAR (Para o futuro, quando a internet voltar e o app enviar para o Kauê)
 export async function limparReportesOffline() {
   await AsyncStorage.removeItem(CHAVE_OFFLINE);
+}
+
+// 5. FUNÇÃO DE REMOÇÃO SELETIVA (A Nova Limpeza Segura do Sincronizador)
+// Remove apenas o reporte que já foi transmitido com sucesso para a API
+export async function removerReporteOfflinePorId(idLocal) {
+  try {
+    const reportesAtuais = await carregarReportesOffline();
+    
+    // Filtra a lista mantendo apenas os reportes que NÃO possuem o ID enviado
+    const novaLista = reportesAtuais.filter((reporte) => reporte.idLocal !== idLocal);
+    
+    await AsyncStorage.setItem(CHAVE_OFFLINE, JSON.stringify(novaLista));
+    console.log(`Reporte ${idLocal} removido do armazenamento local com segurança.`);
+  } catch (erro) {
+    console.error('Erro ao remover reporte específico offline:', erro);
+  }
 }
