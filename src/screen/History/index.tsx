@@ -1,8 +1,9 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { styles } from './styles';
+import api from '@/src/services/api';
 
 const MOCK_REPORTS = [
   {
@@ -58,14 +59,63 @@ export function History() {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState('');
   const [filter, setFilter] = useState('all');
+  const [isLoading, setIsLoading] = useState(false)
+  const [reports, setReports] = useState<any[]>([]);
 
-  const filteredReports = MOCK_REPORTS.filter((report) => {
+  const filteredReports = reports.filter((report) => {
     if (filter === 'resolved' && report.status !== 'resolved') return false;
     if (searchQuery && !report.title.toLowerCase().includes(searchQuery.toLowerCase())) {
       return false;
     }
     return true;
   });
+
+
+  useEffect(() => {
+    const buscarMeusReportes = async () => {
+      try {
+
+        setIsLoading(true); // Se você criou aquele estado de loading antes
+        const response = await api.get('/complaints/my');
+
+        const dadosDoBanco = response.data;
+
+        // 2. Mapeamos (traduzimos) para o formato exato da sua tela
+        const dadosFormatados = dadosDoBanco.map((item: any) => {
+          // Transformando a data ISO (2026-06-25T19:04:49.226Z) em objeto Date
+          const dataObj = new Date(item.createdAt);
+
+          // Pegando dia/mês e hora/minuto com 2 dígitos numéricos
+          const dia = String(dataObj.getDate()).padStart(2, '0');
+          const mes = String(dataObj.getMonth() + 1).padStart(2, '0');
+          const hora = String(dataObj.getHours()).padStart(2, '0');
+          const minuto = String(dataObj.getMinutes()).padStart(2, '0');
+
+          return {
+            id: item.id,
+            title: item.category || 'Sem categoria',
+            location: item.neighborhood || 'Local não informado',
+            date: `${dia}/${mes}`,
+            time: `${hora}:${minuto}`,
+            status: item.status,
+            points: 0, // Como não veio do banco, deixamos 0 por padrão
+            image: item.photoUrl || null,
+          };
+        });
+
+        setReports(dadosFormatados);
+
+      } catch (error: any) {
+        console.error("Erro na requisição:", error.response?.data || error.message);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    buscarMeusReportes();
+  }, []);
+
+
 
   return (
     <>
@@ -101,7 +151,7 @@ export function History() {
       {/* Filters */}
       <View style={styles.filtersContainer}>
         <Text style={styles.totalText}>
-          Total: <Text style={styles.totalBold}>{MOCK_REPORTS.length} reportes</Text>
+          Total: <Text style={styles.totalBold}>{reports.length} reportes</Text>
         </Text>
 
         <View style={styles.filterButtons}>
@@ -144,8 +194,8 @@ export function History() {
                   <Ionicons name={statusConfig.icon} size={16} color={statusConfig.color} />
                 </View>
 
-                <TouchableOpacity 
-                  style={styles.reportCard} 
+                <TouchableOpacity
+                  style={styles.reportCard}
                   activeOpacity={0.7}
                   onPress={() => router.push({
                     pathname: '/detalhesDenuncia',
