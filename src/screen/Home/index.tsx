@@ -3,6 +3,7 @@ import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import api from '@/src/services/api';
 import { styles } from './styles';
 
 export function Home() {
@@ -22,9 +23,11 @@ export function Home() {
     try {
       setLoading(true);
 
-      // Como os serviços não existem ainda, deixamos tudo zerado
+      const response = await api.get('complaints/my')
+
+      setComplaints(response.data);
+
       setPoints(0);
-      setComplaints([]);
       setRanking(null);
 
     } catch (error) {
@@ -142,7 +145,7 @@ export function Home() {
               return (
                 <View key={complaint.id} style={styles.activityItem}>
                   <View style={[styles.activityIndicator, { backgroundColor: statusInfo.color }]} />
-                  <Text style={styles.activityText}>{complaint.description}</Text>
+                  <Text style={styles.activityText}>{complaint.category}</Text>
                   <View style={[styles.activityStatus, statusInfo.bgStyle]}>
                     <Text style={{ color: statusInfo.textColor, fontSize: 10, fontWeight: '600' }}>
                       {statusInfo.text}
