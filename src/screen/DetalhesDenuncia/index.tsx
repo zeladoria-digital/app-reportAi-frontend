@@ -1,16 +1,16 @@
 import { Ionicons } from "@expo/vector-icons";
 import { router, useLocalSearchParams } from "expo-router";
-import { Image, ScrollView, Text, TouchableOpacity, View } from "react-native";
+import { useEffect, useState } from "react";
+import { ActivityIndicator, Image, ScrollView, Text, TouchableOpacity, View } from "react-native";
+import api from '@/src/services/api'; // <-- Adicionamos a importação da API
 import { styles } from "./styles";
 
+// Apenas para ilustrar a linha do tempo (como o backend ainda não manda o histórico detalhado, deixamos mockado por enquanto)
 const DADOS_TIMELINE = [
-  { id: '1', title: 'Reporte enviado', date: '05/05/2026 14:30' },
-  { id: '2', title: 'Em análise', date: '05/05/2026 15:00' },
-  { id: '3', title: 'Aprovado', date: '06/05/2026 09:15' },
-  { id: '4', title: 'Concluído', date: '08/05/2026 16:45' },
+  { id: '1', title: 'Reporte enviado', date: 'Hoje' },
+  { id: '2', title: 'Em análise', date: 'Aguardando' },
 ];
 
-// O Dicionário de Status (Igual ao da tela de Histórico)
 const STATUS_CONFIG = {
   resolved: { icon: 'checkmark-circle-outline', color: '#10B981', label: 'Resolvido' },
   in_progress: { icon: 'time-outline', color: '#3B82F6', label: 'Em andamento' },
@@ -18,72 +18,88 @@ const STATUS_CONFIG = {
   rejected: { icon: 'close-circle-outline', color: '#EF4444', label: 'Recusado' },
 };
 
-// Banco de Dados completo e com a propriedade 'status'
-const BANCO_DE_DADOS_MOCK = [
-  {
-    id: '1',
-    title: 'Buraco na via',
-    location: 'Rua das Flores, 123 - Centro',
-    date: 'Reportado em 05/05/2026',
-    description: 'Buraco grande no meio da pista, está causando risco para motos e bicicletas.',
-    status: 'resolved'
-  },
-  {
-    id: '2',
-    title: 'Lixo acumulado',
-    location: 'Av. Principal, 456 - Bairro Novo',
-    date: 'Reportado em 03/05/2026',
-    description: 'Muito lixo acumulado na calçada, atraindo insetos e causando mau cheiro na vizinhança inteira.',
-    status: 'in_progress'
-  },
-  {
-    id: '3',
-    title: 'Fossa cheia',
-    location: 'Rua Central, 789 - Bairro Novo',
-    date: 'Reportado em 01/05/2026',
-    description: 'Fossa transbordando no meio da rua, situação de risco sanitário para as crianças.',
-    status: 'pending'
-  },
-  {
-    id: '4',
-    title: 'Iluminação',
-    location: 'Praça da Matriz - Centro',
-    date: 'Reportado em 28/04/2026',
-    description: 'Poste queimado há 3 semanas deixando a praça escura e perigosa.',
-    status: 'rejected'
-  }
-];
-
-
 export function DetalhesDenuncia() {
-
-    // 1. Abrindo a mochila e pegando o ID que o Histórico mandou
     const { idDaDenuncia } = useLocalSearchParams();
+    
+    // Nossos novos estados para controlar a API
+    const [denuncia, setDenuncia] = useState<any>(null);
+    const [isLoading, setIsLoading] = useState(true);
 
-    // 2. Buscando no Banco de Dados a denúncia que tem ESSE ID
-    const denuncia = BANCO_DE_DADOS_MOCK.find(item => item.id === idDaDenuncia);
+    // Buscando a denúncia real no banco
+    useEffect(() => {
+        const buscarDetalhes = async () => {
+            try {
+                setIsLoading(true);
+                // Faz a requisição enviando o ID na URL
+                const response = await api.get(`/complaints/${idDaDenuncia}`);
+                const item = response.data;
 
-    // 3. Trava de Segurança
-    if (!denuncia) {
+                // Formatando a data
+                const dataObj = new Date(item.createdAt);
+                const dataFormatada = dataObj.toLocaleDateString('pt-BR');
+
+                // Salvando no estado com a mesma estrutura que a tela espera
+                setDenuncia({
+                    id: item.id,
+                    title: item.category || 'Sem categoria',
+                    location: item.neighborhood || 'Local não informado',
+                    date: `Reportado em ${dataFormatada}`,
+                    description: item.description || 'Sem descrição informada.',
+                    status: item.status,
+                    photoUrl: item.photoUrl
+                });
+
+            } catch (error) {
+                console.error("Erro ao buscar detalhes:", error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        if (idDaDenuncia) {
+            buscarDetalhes();
+        }
+    }, [idDaDenuncia]);
+
+    // Tela de carregamento enquanto busca do banco
+    if (isLoading) {
         return (
             <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                <Text>Denúncia não encontrada!</Text>
+                <ActivityIndicator size="large" color="#3B82F6" />
+                <Text style={{ marginTop: 10 }}>Carregando detalhes...</Text>
             </View>
         );
     }
 
-const statusAtual = STATUS_CONFIG[denuncia.status as keyof typeof STATUS_CONFIG];
+    // Trava de Segurança
+    if (!denuncia) {
+        return (
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                <Text>Denúncia não encontrada!</Text>
+                <TouchableOpacity onPress={() => router.back()} style={{ marginTop: 20 }}>
+                    <Text style={{ color: '#3B82F6' }}>Voltar</Text>
+                </TouchableOpacity>
+            </View>
+        );
+    }
+
+    // O mesmo "fallback" de segurança que criamos na outra tela!
+    const statusAtual = STATUS_CONFIG[denuncia.status as keyof typeof STATUS_CONFIG] || {
+        icon: 'help-circle-outline', color: '#64748B', label: denuncia.status || 'Desconhecido'
+    };
 
     return (
         <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-
             {/* --- BLOCO 1: HEADER E IMAGEM --- */}
             <View style={styles.headerContainer}>
+                {/* Alterado para usar a foto real do banco, se não tiver, usa a padrão */}
                 <Image 
-                    source={{ uri: 'https://images.unsplash.com/photo-1515162816999-a0c47dc192f7?auto=format&fit=crop&q=80&w=800' }} 
+                    source={{ uri: denuncia.photoUrl || 'https://images.unsplash.com/photo-1515162816999-a0c47dc192f7?auto=format&fit=crop&q=80&w=800' }} 
                     style={styles.imagemCapa}
                     resizeMode="cover"
                 />
+               
+               {/* O RESTANTE DO SEU CÓDIGO JSX CONTINUA EXATAMENTE IGUAL DAQUI PARA BAIXO */}
 
                 <View style={styles.topButtonsContainer}>
                     <TouchableOpacity style={styles.iconButton} onPress={() => router.back()}>

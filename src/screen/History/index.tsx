@@ -181,7 +181,12 @@ export function History() {
           <View style={styles.timelineLine} />
 
           {filteredReports.map((report) => {
-            const statusConfig = STATUS_CONFIG[report.status];
+            const statusConfig = STATUS_CONFIG[report.status] || {
+              icon: 'help-circle',
+              color: '#64748B',
+              bgColor: '#F1F5F9',
+              label: report.status || 'Desconhecido'
+            };
 
             return (
               <View key={report.id} style={styles.timelineItem}>
