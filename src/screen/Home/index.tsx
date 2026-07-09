@@ -8,7 +8,7 @@ import { styles } from './styles';
 
 export function Home() {
   const router = useRouter();
-  const { user } = useAuth(); // ← assume que o AuthContext guarda o usuário logado
+  const { user } = useAuth(); 
 
   const [loading, setLoading] = useState(true);
   const [points, setPoints] = useState(0);
