@@ -5,29 +5,23 @@ import Zocial from '@expo/vector-icons/Zocial';
 import { Stack, router } from "expo-router";
 import { Pressable, Text, View } from 'react-native';
 import { styles } from './styles';
-
 export function Menu() {
-  const { login } = useAuth();
+    const { login } = useAuth();
+    const handleGoogleLogin = () => {
+        login();
+        router.replace('/(app)/home-tabs');
+    };
+    const handleEmailLogin = () => {
+        login();
+        router.push('/login');
+    };
+    return (<View style={styles.container}>
 
-  const handleGoogleLogin = () => {
-    login();
-    router.replace('/(app)/home-tabs');
-  };
-
-  const handleEmailLogin = () => {
-    login();
-    router.push('/login');
-  };
-
-  return (
-    <View style={styles.container}>
-
-      <Stack.Screen
-      options={{
-        title: 'Voltar',
-        headerShadowVisible: false,
-        headerStyle: { backgroundColor: '#F8FAFC' },
-      }}  />
+      <Stack.Screen options={{
+            title: 'Voltar',
+            headerShadowVisible: false,
+            headerStyle: { backgroundColor: '#F8FAFC' },
+        }}/>
         
         <View style={styles.header}>
           
@@ -43,8 +37,8 @@ export function Menu() {
         <View style={styles.cardBranco}>
           
           <Pressable style={styles.botaoAzul} onPress={handleGoogleLogin}>
-            <AntDesign name="google" size={24} color="white" />
-            <Text  style={styles.textoBotaoAzul}>Continuar com Google</Text>
+            <AntDesign name="google" size={24} color="white"/>
+            <Text style={styles.textoBotaoAzul}>Continuar com Google</Text>
           </Pressable>
 
           <View style={styles.divisorContainer}>
@@ -54,7 +48,7 @@ export function Menu() {
           </View>
 
           <Pressable style={styles.botaoBranco} onPress={handleEmailLogin}>
-            <Zocial name='email' size={24} color="black" />
+            <Zocial name='email' size={24} color="black"/>
             <Text style={styles.textoBotaoBranco}>Continuar com Email</Text>
           </Pressable>
 
@@ -63,17 +57,17 @@ export function Menu() {
         <View style={styles.gamificacaoContainer}>
 
           <View style={styles.miniCard}>
-            <Feather name="award" size={24} color="#EAB308" />
+            <Feather name="award" size={24} color="#EAB308"/>
             <Text style={styles.textoMiniCard}>Ganhe Pontos</Text>
           </View>          
           
           <View style={styles.miniCard}>
-            <Feather name="trending-up" size={24} color="#22C55E" />
+            <Feather name="trending-up" size={24} color="#22C55E"/>
             <Text style={styles.textoMiniCard}>Suba no Ranking</Text>
           </View>          
           
           <View style={styles.miniCard}>
-            <Feather name="star" size={24} color="#A855F7" />
+            <Feather name="star" size={24} color="#A855F7"/>
             <Text style={styles.textoMiniCard}>Desbloqueie Medalhas</Text>
           </View>
 
@@ -84,25 +78,18 @@ export function Menu() {
             <Text style={styles.textoCriarConta}>Primeira vez? Criar Conta →</Text>
           </Pressable>
 
-          {/* O Truque dos Textos Aninhados */}
+          
           <Text style={styles.textoLgpd}>
             Ao continuar, você concorda com nossos{' '}
-            <Text 
-                style={styles.textoLinkLegal} 
-                onPress={() => console.log('Abrir Termos')}
-            >
+            <Text style={styles.textoLinkLegal} onPress={() => console.log('Abrir Termos')}>
                 Termos de uso
             </Text>
             {' '}e{' '}
-            <Text 
-                style={styles.textoLinkLegal} 
-                onPress={() => console.log('Abrir Privacidade')}
-            >
+            <Text style={styles.textoLinkLegal} onPress={() => console.log('Abrir Privacidade')}>
                 Política de Privacidade
             </Text>
           </Text>
         </View>
 
-    </View>
-  );
+    </View>);
 }

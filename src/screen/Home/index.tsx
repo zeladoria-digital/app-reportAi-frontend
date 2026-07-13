@@ -22,20 +22,17 @@ export function Home() {
   const loadData = async () => {
     try {
       setLoading(true);
-
       const response = await api.get('complaints/my')
-
       setComplaints(response.data);
-
       setPoints(0);
       setRanking(null);
-
     } catch (error) {
       console.error('Erro ao carregar dados:', error);
     } finally {
       setLoading(false);
     }
   };
+
   const handleNotifications = () => {
     router.push('/notificacoes')
   };
@@ -44,7 +41,6 @@ export function Home() {
     router.push('/(app)/new-report');
   };
 
-  // Mapeia o status do backend para texto e cor
   const getStatusInfo = (status) => {
     const statusMap = {
       pending: { text: 'Recebido', color: '#F59E0B', bgStyle: styles.statusInProgress, textColor: '#0369A1' },
@@ -56,24 +52,20 @@ export function Home() {
     return statusMap[status] || statusMap.pending;
   };
 
-  const resolvedCount = complaints.filter(c => c.status === 'resolved').length;
+  const resolvedCount = complaints.filter((c: any) => c.status === 'resolved').length;
 
   if (loading) {
     return (
       <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
-        <ActivityIndicator size="large" color="#1E293B" />
+        <ActivityIndicator size="large" color="#1E293B"/>
       </View>
     );
   }
 
   return (
     <>
-      <ScrollView
-        style={styles.container}
-        contentContainerStyle={styles.scrollContent}
-        scrollEventThrottle={16}
-      >
-        {/* Header */}
+      <ScrollView style={styles.container} contentContainerStyle={styles.scrollContent} scrollEventThrottle={16}>
+        
         <View style={styles.header}>
           <View style={styles.greetingContainer}>
             <Text style={styles.greeting}>Olá, {user?.name?.split(' ')[0] || 'Cidadão'}</Text>
@@ -81,11 +73,10 @@ export function Home() {
           </View>
 
           <TouchableOpacity onPress={handleNotifications} style={{ padding: 8 }}>
-            <Ionicons name="notifications-outline" size={28} color="#1E293B" />
+            <Ionicons name="notifications-outline" size={28} color="#1E293B"/>
           </TouchableOpacity>
         </View>
 
-        {/* Statistics Cards */}
         <View style={styles.statsContainer}>
           <View style={styles.statCard}>
             <Text style={styles.statValue}>{complaints.length}</Text>
@@ -103,24 +94,19 @@ export function Home() {
           </View>
         </View>
 
-        {/* Points Card */}
         <View style={styles.pointsCard}>
           <View style={styles.pointsContent}>
             <Text style={styles.pointsLabel}>Seus Pontos</Text>
             <Text style={styles.pointsValue}>{points.toLocaleString('pt-BR')}</Text>
           </View>
           <View style={styles.pointsIcon}>
-            <MaterialCommunityIcons name="trophy" size={28} color="#FFFFFF" />
+            <MaterialCommunityIcons name="trophy" size={28} color="#FFFFFF"/>
           </View>
         </View>
 
-        {/* New Report Button */}
-        <TouchableOpacity 
-          style={styles.newReportButton}
-          onPress={handleNewReport}
-        >
+        <TouchableOpacity style={styles.newReportButton} onPress={handleNewReport}>
           <View style={styles.newReportIcon}>
-            <MaterialCommunityIcons name="camera" size={24} color="#FFFFFF" />
+            <MaterialCommunityIcons name="camera" size={24} color="#FFFFFF"/>
           </View>
           <View style={styles.newReportContent}>
             <Text style={styles.newReportTitle}>Novo Reporte</Text>
@@ -131,7 +117,6 @@ export function Home() {
           </View>
         </TouchableOpacity>
 
-        {/* Recent Activity */}
         <Text style={styles.sectionTitle}>Atividade Recente</Text>
 
         <View style={styles.recentActivityContainer}>
@@ -140,11 +125,11 @@ export function Home() {
               Você ainda não fez nenhum reporte
             </Text>
           ) : (
-            complaints.slice(0, 5).map((complaint) => {
+            complaints.slice(0, 5).map((complaint: any) => {
               const statusInfo = getStatusInfo(complaint.status);
               return (
                 <View key={complaint.id} style={styles.activityItem}>
-                  <View style={[styles.activityIndicator, { backgroundColor: statusInfo.color }]} />
+                  <View style={[styles.activityIndicator, { backgroundColor: statusInfo.color }]}/>
                   <Text style={styles.activityText}>{complaint.category}</Text>
                   <View style={[styles.activityStatus, statusInfo.bgStyle]}>
                     <Text style={{ color: statusInfo.textColor, fontSize: 10, fontWeight: '600' }}>

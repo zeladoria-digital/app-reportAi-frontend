@@ -116,7 +116,6 @@ export function History() {
 
   return (
     <>
-      {/* Header */}
       <View style={styles.header}>
         <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
           <Text style={[styles.headerTitle]}>
@@ -125,46 +124,38 @@ export function History() {
         </View>
         <View style={styles.headerActions}>
           <TouchableOpacity>
-            <Ionicons name="search" size={20} color="#64748B" />
+            <Ionicons name="search" size={20} color="#64748B"/>
           </TouchableOpacity>
           <TouchableOpacity>
-            <Ionicons name="funnel" size={20} color="#64748B" />
+            <Ionicons name="funnel" size={20} color="#64748B"/>
           </TouchableOpacity>
         </View>
       </View>
 
-      {/* Search */}
       <View style={styles.searchContainer}>
-        <Ionicons name="search" size={16} color="#9CA3AF" style={styles.searchIcon} />
-        <TextInput
-          style={styles.searchInput}
-          placeholder="Buscar reportes..."
-          value={searchQuery}
-          onChangeText={setSearchQuery}
+        <Ionicons name="search" size={16} color="#9CA3AF" style={styles.searchIcon}/>
+        <TextInput 
+          style={styles.searchInput} 
+          placeholder="Buscar reportes..." 
+          value={searchQuery} 
+          onChangeText={setSearchQuery} 
           placeholderTextColor="#9CA3AF"
         />
       </View>
 
-      {/* Filters */}
       <View style={styles.filtersContainer}>
         <Text style={styles.totalText}>
           Total: <Text style={styles.totalBold}>{reports.length} reportes</Text>
         </Text>
 
         <View style={styles.filterButtons}>
-          <TouchableOpacity
-            style={[styles.filterButton, filter === 'all' && styles.filterButtonActive]}
-            onPress={() => setFilter('all')}
-          >
+          <TouchableOpacity style={[styles.filterButton, filter === 'all' && styles.filterButtonActive]} onPress={() => setFilter('all')}>
             <Text style={[styles.filterText, filter === 'all' && styles.filterTextActive]}>
               Todos
             </Text>
           </TouchableOpacity>
 
-          <TouchableOpacity
-            style={[styles.filterButton, filter === 'resolved' && styles.filterButtonActive]}
-            onPress={() => setFilter('resolved')}
-          >
+          <TouchableOpacity style={[styles.filterButton, filter === 'resolved' && styles.filterButtonActive]} onPress={() => setFilter('resolved')}>
             <Text style={[styles.filterText, filter === 'resolved' && styles.filterTextActive]}>
               Resolvidos
             </Text>
@@ -184,7 +175,6 @@ export function History() {
             initialNumToRender={5}
             maxToRenderPerBatch={5}
             windowSize={5}
-            // Propriedades Novas para a Paginação Infinita
             onEndReachedThreshold={0.1}
             onEndReached={carregarMaisItens}
             ListFooterComponent={
@@ -275,13 +265,13 @@ export function History() {
       ) : (
         <View style={styles.emptyContainer}>
           <View style={styles.emptyIcon}>
-            <Ionicons name="clipboard-outline" size={48} color="#9CA3AF" />
+            <Ionicons name="clipboard-outline" size={48} color="#9CA3AF"/>
           </View>
           <Text style={styles.emptyTitle}>Nenhum reporte encontrado</Text>
           <Text style={styles.emptyText}>
             {searchQuery
-              ? 'Tente buscar com outros termos'
-              : 'Você ainda não tem reportes. Crie o seu primeiro!'}
+                ? 'Tente buscar com outros termos'
+                : 'Você ainda não tem reportes. Crie o seu primeiro!'}
           </Text>
         </View>
       )}

@@ -1,5 +1,4 @@
-import { DetalhesDenuncia } from '@/src/screen/DetalhesDenuncia/index'; 
-
+import { DetalhesDenuncia } from '@/src/screen/DetalhesDenuncia/index';
 export default function TelaDeCadastroRota() {
-  return <DetalhesDenuncia />;
+    return <DetalhesDenuncia />;
 }

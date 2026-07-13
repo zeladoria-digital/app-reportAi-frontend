@@ -1,5 +1,4 @@
 import { StyleSheet } from 'react-native';
-
 export const styles = StyleSheet.create({
     container: {
         flex: 1,
@@ -20,7 +19,6 @@ export const styles = StyleSheet.create({
         padding: 25,
         alignItems: 'center',
         gap: 15,
-
     },
     listContainer: {
         padding: 25,
@@ -29,7 +27,6 @@ export const styles = StyleSheet.create({
         fontWeight: 'bold',
         fontSize: 25,
         color: 'black'
-
     },
     markReadText: {
         fontWeight: 'bold',
@@ -41,8 +38,6 @@ export const styles = StyleSheet.create({
         borderRadius: 20,
         paddingVertical: 14,
         paddingHorizontal: 15
-
-
     },
     tabButtonActive: {
         backgroundColor: '#2563EB',
@@ -54,7 +49,6 @@ export const styles = StyleSheet.create({
     },
     tabTextActive: {
         color: '#FFFFFF'
-
     },
     notificationCard: {
         backgroundColor: '#ffffff',
@@ -64,7 +58,6 @@ export const styles = StyleSheet.create({
         flexDirection: 'row',
         padding: 20,
         marginBottom: 15
-
     },
     iconContainer: {
         width: 50,
@@ -77,14 +70,11 @@ export const styles = StyleSheet.create({
     textContainer: {
         flexDirection: 'column',
         flex: 1,
-        
-
     },
     notificationTitle: {
         fontSize: 25,
         color: 'black',
         fontWeight: 'bold'
-
     },
     notificationDescription: {
         fontSize: 20,
@@ -99,11 +89,5 @@ export const styles = StyleSheet.create({
         height: 10,
         borderRadius: 10,
         backgroundColor: '#2563EB'
-
     }
-
-
-
-
-
-})
+});

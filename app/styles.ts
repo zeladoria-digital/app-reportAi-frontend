@@ -1,5 +1,4 @@
 import { StyleSheet } from 'react-native';
-
 export const styles = StyleSheet.create({
     container: {
         flex: 1,
@@ -22,7 +21,7 @@ export const styles = StyleSheet.create({
     },
     subtitulo: {
         fontSize: 32,
-        color: '#e2e8f0', // Um cinza bem clarinho
+        color: '#e2e8f0',
         textAlign: 'center',
         marginTop: 8,
         marginBottom: 40,
@@ -44,7 +43,7 @@ export const styles = StyleSheet.create({
         backgroundColor: 'white',
         width: '50%',
         paddingVertical: 16,
-        borderRadius: 30, // Deixa as bordas bem arredondadas igual no Figma
+        borderRadius: 30,
         alignItems: 'center',
     },
     botaoTexto: {
@@ -57,7 +56,7 @@ export const styles = StyleSheet.create({
         fontSize: 20,
         marginBottom: 16,
     },
-logoWrapper: {
+    logoWrapper: {
         backgroundColor: 'rgba(255, 255, 255, 0.15)',
         padding: 24,
         borderRadius: 24,
@@ -65,7 +64,7 @@ logoWrapper: {
     },
     iconWrapper: {
         backgroundColor: 'rgba(255, 255, 255, 0.15)',
-        padding: 6,           // Um padding menorzinho para a lista
+        padding: 6,
         borderRadius: 12,
     },
-})
+});
