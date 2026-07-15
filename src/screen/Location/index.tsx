@@ -8,7 +8,6 @@ import { useReport } from '../../contexts/reportContext';
 export function Location() {
     const router = useRouter();
     const { salvarLocalizacao } = useReport();
-    o;
     const [coords, setCoords] = useState<ExpoLocation.LocationObjectCoords | null>(null);
     const [address, setAddress] = useState('Buscando sinal do satélite...');
     const [loading, setLoading] = useState(true);
